@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Apex Planner</title>
+<meta name="description" content="Tasks, habits and a weekly timetable for ApexOS, stored on this device.">
+<meta name="theme-color" content="#080a12">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <img src="./icons/icon-192.png" alt="" width="28" height="28">
+    <span>Apex Planner</span>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="View">
+    <button role="tab" data-view="today" aria-selected="true" type="button">Today</button>
+    <button role="tab" data-view="tasks" aria-selected="false" type="button">Tasks</button>
+    <button role="tab" data-view="habits" aria-selected="false" type="button">Habits</button>
+    <button role="tab" data-view="timetable" aria-selected="false" type="button">Timetable</button>
+  </nav>
+</header>
+
+<main>
+  <section class="panel" data-panel="today">
+    <h2 id="todayHeading">Today</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Due today</h3>
+        <ul id="todayTasks" class="rows"></ul>
+        <p class="muted" id="todayTasksEmpty">Nothing due. Good.</p>
+      </article>
+      <article class="card">
+        <h3>Habits left</h3>
+        <ul id="todayHabits" class="rows"></ul>
+        <p class="muted" id="todayHabitsEmpty">All habits done for today.</p>
+      </article>
+      <article class="card wide">
+        <h3>Today's timetable</h3>
+        <ul id="todaySlots" class="rows"></ul>
+        <p class="muted" id="todaySlotsEmpty">No blocks scheduled for today.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" data-panel="tasks" hidden>
+    <form id="taskForm" class="composer" autocomplete="off">
+      <input id="taskTitle" type="text" placeholder="What needs doing?" required aria-label="Task title">
+      <input id="taskDue" type="date" aria-label="Due date">
+      <select id="taskPrio" aria-label="Priority">
+        <option value="normal">Normal</option>
+        <option value="high">High</option>
+        <option value="low">Low</option>
+      </select>
+      <button class="primary" type="submit">Add task</button>
+    </form>
+    <div class="filters" role="group" aria-label="Filter tasks">
+      <button type="button" data-filter="open" aria-pressed="true">Open</button>
+      <button type="button" data-filter="overdue" aria-pressed="false">Overdue</button>
+      <button type="button" data-filter="done" aria-pressed="false">Done</button>
+      <button type="button" data-filter="all" aria-pressed="false">All</button>
+    </div>
+    <ul id="taskList" class="rows"></ul>
+    <p class="muted" id="taskEmpty">No tasks here.</p>
+  </section>
+
+  <section class="panel" data-panel="habits" hidden>
+    <form id="habitForm" class="composer" autocomplete="off">
+      <input id="habitName" type="text" placeholder="Habit to build (e.g. Read 20 pages)" required aria-label="Habit name">
+      <button class="primary" type="submit">Add habit</button>
+    </form>
+    <p class="muted">Tap a day to log it. The last seven days are shown, today on the right.</p>
+    <ul id="habitList" class="rows"></ul>
+    <p class="muted" id="habitEmpty">No habits yet.</p>
+  </section>
+
+  <section class="panel" data-panel="timetable" hidden>
+    <form id="slotForm" class="composer" autocomplete="off">
+      <select id="slotDay" aria-label="Day"></select>
+      <input id="slotStart" type="time" required aria-label="Start time">
+      <input id="slotEnd" type="time" aria-label="End time">
+      <input id="slotTitle" type="text" placeholder="Block title" required aria-label="Block title">
+      <button class="primary" type="submit">Add block</button>
+    </form>
+    <div id="slotList" class="week"></div>
+  </section>
+</main>
+
+<div class="toast" id="toast" hidden></div>
+<script src="./app.js"></script>
+</body>
+</html>
