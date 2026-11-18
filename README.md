@@ -1,35 +1,43 @@
 # Apex Planner
 
-Timetable, tasks and habits, in one view instead of three apps.
+Tasks, habits and a weekly timetable that live entirely on this device. Vanilla HTML/CSS/JS with
+relative `./` paths, so it runs from `/apps/planner/` inside the ApexOS bundle and works offline.
 
-**Status: not built.**
+## Run
 
-## What it should do
+```sh
+python3 -m http.server 8080
+# then open http://127.0.0.1:8080/
+```
 
-- A weekly timetable that looks like a school timetable, because that is what you actually
-  read at a glance.
-- Tasks with due dates, sorted by what is actually urgent.
-- Habits as a row of dots per day — the whole value is seeing the streak.
+## Views
 
-## The constraint that shapes it
+- **Today** — what is due or overdue right now, habits still unlogged, and the blocks scheduled for
+  today's weekday. This is the view to land on.
+- **Tasks** — add a task with an optional due date and priority; filter by open / overdue / done / all.
+  Ordering is priority first, then due date, then creation time.
+- **Habits** — one row per habit with the last seven days as toggles (today is the last button) and a
+  current streak. A streak counts consecutive logged days ending today, or ending yesterday if today
+  is not logged yet, so it does not look broken before you have checked in.
+- **Timetable** — weekly recurring blocks: weekday, start, optional end, title. The current weekday is
+  highlighted.
 
-Notifications are the hard part, not storage. Firestore holds the data for free. Reminders
-need either a web push service worker (works in Chrome on Android, unreliable elsewhere) or
-WorkManager in an Android app. There is no free scheduled-server option on Spark, so a
-reminder cannot be sent by Firebase itself.
+## Storage
 
-## The design detail that matters
+One `localStorage` key, `apex.planner.v1`:
 
-A habit tracker that loses a day because the phone was off is worse than useless. Derive
-streaks from stored dates rather than incrementing a counter, so a missed sync repairs
-itself instead of resetting a 40-day streak.
+```json
+{
+  "tasks":  [{ "id": "…", "title": "…", "due": "2026-11-20", "prio": "high", "done": false, "created": 1763472000000 }],
+  "habits": [{ "id": "…", "name": "…", "log": { "2026-11-18": true } }],
+  "slots":  [{ "id": "…", "day": 0, "start": "09:00", "end": "10:00", "title": "…" }]
+}
+```
 
-## What you need to do
+Days are `0`–`6` for Monday–Sunday. Dates are local `YYYY-MM-DD` strings, compared as strings, so no
+timezone drift. Apex Backup picks this key up automatically.
 
-1. Nothing new.
+## Bundling into ApexOS
 
-## First three steps
-
-1. A timetable grid, stored locally, that scrolls and looks right on a phone.
-2. Habits with date-based streaks and no notifications yet.
-3. Tasks, then one reminder mechanism once the rest is actually being used.
+Roster entry `Apex-Planner planner`. Keep paths relative and bump `CACHE` in `sw.js`
+(`apex-planner-v1`) when shell files change.
